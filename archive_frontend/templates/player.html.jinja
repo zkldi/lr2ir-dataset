@@ -1,0 +1,197 @@
+{% extends "_base.html.jinja" %}
+
+{% block title %}{{ profile.name }} - LR2IR Archive{% endblock %}
+
+{% block extra_styles %}
+.profile-box { background: #111; border: 1px solid #446; padding: 14px 18px; margin: 10px 0; }
+.bio { color: #222; background: #fff; border-left: 3px solid #446; padding: 8px 12px; margin: 8px 0; font-size: 10pt; white-space: pre-wrap; }
+.stat-grid { display: flex; gap: 12px; flex-wrap: wrap; margin: 8px 0; }
+.stat-box { background: #0a0a20; border: 1px solid #446; padding: 8px 14px; min-width: 100px; text-align: center; }
+.stat-val { font-size: 160%; font-weight: bold; color: #eef; }
+.stat-lbl { font-size: 9pt; color: #88a; }
+.rival-list { display: flex; flex-wrap: wrap; gap: 8px; margin: 8px 0; }
+.rival-chip { background: #113; border: 1px solid #446; padding: 3px 10px; }
+@media (max-width: 900px) { .stat-grid { gap: 6px; } }
+{% endblock %}
+
+{% block content %}
+<div class="profile-box{% if profile.is_cheater %} profile-box-cheated{% endif %}">
+	<h2>
+		{{ profile.name }}
+		{% if profile.privacy_level == "full" %}<span title="Private profile" style="font-size: 13pt; font-weight: normal; color: #888; margin-left: 8px;">🔒 Private Profile</span>
+		{% else if profile.privacy_level == "playcount" %}<span title="Play counts hidden" style="font-size: 13pt; font-weight: normal; color: #888; margin-left: 8px;">🔒 Play Counts Hidden</span>{% endif %}
+	</h2>
+	{% if profile.is_cheater %}<div class="cheated-label">CHEATED</div>{% endif %}
+	<h4>{{ profile.dan }}{% if !profile.dan.is_empty() %} - {% endif %}LR2IR ID #{{ profile.player_id }}</h4>
+
+	{% if !profile.bio.is_empty() %}
+	<div class="bio">{{ profile.bio }}</div>
+	{% endif %}
+
+	<div class="stat-grid">
+		<div class="stat-box" style="flex: 1;">
+			<div class="stat-val">{{ profile.songs_played }}</div>
+			<div class="stat-lbl">Songs Played</div>
+		</div>
+		<div class="stat-box" style="flex: 1;">
+			<div class="stat-val">{{ profile.play_count }}</div>
+			<div class="stat-lbl">Total Plays</div>
+		</div>
+		<div class="stat-box" style="flex: 1;">
+			<div class="stat-val">{{ profile.total_clears }}</div>
+			<div class="stat-lbl">Clears</div>
+		</div>
+		<div class="stat-box" style="flex: 1;">
+			<div class="stat-val">{{ profile.fc_count }}</div>
+			<div class="stat-lbl">FCs</div>
+		</div>
+		{% if profile.perfect_fc_count > 0 %}
+		<div class="stat-box" style="flex: 1;">
+			<div class="stat-val">{{ profile.perfect_fc_count }}</div>
+			<div class="stat-lbl">Perfect FCs</div>
+		</div>
+		{% endif %}
+		<div class="stat-box" style="flex: 1;">
+			<div class="stat-val">{{ profile.failed_count }}</div>
+			<div class="stat-lbl">Fails</div>
+		</div>
+	</div>
+
+	{% if profile.total_clears + profile.failed_count > 0 %}
+	<div class="cb-legend">
+		<span class="cb-fc-l">FC ({{ profile.fc_count }})</span>
+		<span class="cb-hard-l">HARD ({{ profile.hard_count }})</span>
+		<span class="cb-norm-l">NORMAL ({{ profile.normal_count }})</span>
+		<span class="cb-easy-l">EASY ({{ profile.easy_count }})</span>
+		<span class="cb-fail-l">FAILED ({{ profile.failed_count }})</span>
+	</div>
+	{% let denom = profile.total_clears + profile.failed_count %}
+	<div class="clear-bar" style="width: 100%;">
+		<div class="cb-fc"   style="width: {{ profile.fc_count     * 100 / denom }}%;"></div>
+		<div class="cb-hard" style="width: {{ profile.hard_count   * 100 / denom }}%;"></div>
+		<div class="cb-norm" style="width: {{ profile.normal_count * 100 / denom }}%;"></div>
+		<div class="cb-easy" style="width: {{ profile.easy_count   * 100 / denom }}%;"></div>
+		<div class="cb-fail" style="width: {{ profile.failed_count * 100 / denom }}%;"></div>
+	</div>
+	{% endif %}
+</div>
+
+{% if !tables.is_empty() %}
+<h3>Table Progress</h3>
+<div class="cb-legend">
+	<span class="cb-fc-l">FC</span>
+	<span class="cb-hard-l">HARD</span>
+	<span class="cb-norm-l">NORMAL</span>
+	<span class="cb-easy-l">EASY</span>
+	<span class="cb-fail-l">FAILED</span>
+	<span style="color: #555;">■ unplayed</span>
+</div>
+<table class="table-progress">
+	<thead>
+		<tr>
+			<th class="name-cell">Table</th>
+			<th class="bar-cell">Clear types</th>
+			<th class="count-cell">Played</th>
+		</tr>
+	</thead>
+	<tbody>
+		{% for t in tables %}
+		<tr>
+			<td class="name-cell">
+				<a href="/players/{{ profile.player_id }}/tables/{{ t.table_id }}">{{ t.name }}</a>
+				<span style="color: #888; font-size: 9pt; margin-left: 6px;">{{ t.symbol }}</span>
+			</td>
+			<td class="bar-cell">{% let clears = t.clears %}{% include "_clear_bar_row.html.jinja" %}</td>
+			<td class="count-cell">{{ t.clears.scored() }} / {{ t.clears.total }}</td>
+		</tr>
+		{% endfor %}
+	</tbody>
+</table>
+{% endif %}
+
+{% if !rivals.is_empty() %}
+<h3>Rivals</h3>
+<div class="rival-list">
+	{% for r in rivals %}
+	<div class="rival-chip"><a href="/players/{{ r.rival_id }}">{{ r.rival_name }}</a></div>
+	{% endfor %}
+</div>
+{% endif %}
+
+{% if !most_plays.is_empty() %}
+<h3>Most Played Charts</h3>
+<table>
+	<thead>
+		<tr>
+			<th style="width: 50%;">Title</th>
+			<th>Clear</th>
+			<th>Plays</th>
+			<th>Rank</th>
+		</tr>
+	</thead>
+	<tbody>
+		{% for p in most_plays %}
+		<tr>
+			<td>{% if let Some(md5) = p.md5.as_ref() %}<a href="/charts/{{ md5 }}">{{ p.title }}</a>{% else %}{{ p.title }}{% endif %}</td>
+			<td class="rank-clear-{{ p.clear_class }}">{{ p.clear_type }}</td>
+			<td>{{ p.play_count }}</td>
+			<td>{% if p.rank_total > 0 %}{{ p.rank_pos }} / {{ p.rank_total }}{% endif %}</td>
+		</tr>
+		{% endfor %}
+	</tbody>
+</table>
+{% endif %}
+
+{% if !recent_plays.is_empty() %}
+<h3>Recently Played Charts</h3>
+<table>
+	<thead>
+		<tr>
+			<th style="width: 50%;">Title</th>
+			<th>Clear</th>
+			<th>Plays</th>
+			<th>Rank</th>
+		</tr>
+	</thead>
+	<tbody>
+		{% for p in recent_plays %}
+		<tr>
+			<td>{% if let Some(md5) = p.md5.as_ref() %}<a href="/charts/{{ md5 }}">{{ p.title }}</a>{% else %}{{ p.title }}{% endif %}</td>
+			<td class="rank-clear-{{ p.clear_class }}">{{ p.clear_type }}</td>
+			<td>{{ p.play_count }}</td>
+			<td>{% if p.rank_total > 0 %}{{ p.rank_pos }} / {{ p.rank_total }}{% endif %}</td>
+		</tr>
+		{% endfor %}
+	</tbody>
+</table>
+{% endif %}
+
+{% if !bbs.is_empty() %}
+<h3>Message Board</h3>
+<table>
+	<thead>
+		<tr>
+			<th style="width: 18%;">From</th>
+			<th style="width: 62%;">Message</th>
+			<th style="width: 20%;">Posted</th>
+		</tr>
+	</thead>
+	<tbody>
+		{% for b in bbs %}
+		<tr>
+			<td>
+				{% if b.player_id > 0 %}
+				<a href="/players/{{ b.player_id }}">{{ b.commenter_name }}</a>
+				{% else if !b.commenter_name.is_empty() %}
+				{{ b.commenter_name }}
+				{% else %}<span style="color: #888;">–</span>
+				{% endif %}
+			</td>
+			<td>{{ b.message }}</td>
+			<td style="color: #888;">{{ b.posted_at }}</td>
+		</tr>
+		{% endfor %}
+	</tbody>
+</table>
+{% endif %}
+{% endblock %}

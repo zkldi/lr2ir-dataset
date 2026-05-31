@@ -1,0 +1,15 @@
+/target/
+.env
+*.env.local
+
+# sqlx offline query cache
+.sqlx/
+
+output/
+
+# frontend_table output
+tableinfo.db
+lr2ir-archive.db
+
+data/*
+!data/.gitkeep

@@ -1,0 +1,203 @@
+{% extends "_base.html.jinja" %}
+
+{% block title %}{{ meta.title }} — LR2IR Archive{% endblock %}
+
+{% block extra_styles %}
+.meta-box { background: #111; border: 1px solid #446; padding: 12px 16px; margin: 10px 0; }
+.meta-box table { width: 100%; margin: 0; }
+.meta-box th { background: #224; width: 12%; }
+.meta-box td { background: #fff; }
+{% endblock %}
+
+{% block content %}
+<div style="margin-bottom: 8px;">
+	<a href="/courses" style="color: #88a;">&#8592; All Courses</a>
+</div>
+
+<div style="text-align: center; padding: 18px 10px 14px; background: #0a0a18; border-bottom: 2px solid #446; margin-bottom: 10px;">
+	<div style="color: #88a; font-size: 10pt; letter-spacing: 0.08em; text-transform: uppercase; margin-bottom: 6px;">{{ meta.category }}</div>
+	<div style="color: #eef; font-size: 200%; font-weight: bold; letter-spacing: 0.02em; line-height: 130%; margin-bottom: 6px;">{{ meta.title }}</div>
+	{% if !meta.creator_name.is_empty() %}
+	<div style="color: #aab; font-size: 115%; margin-bottom: 4px;">
+		{% if let Some(cid) = meta.creator_id %}
+		created by <a href="/players/{{ cid }}" style="color: #aab;">{{ meta.creator_name }}</a>
+		{% else %}
+		created by {{ meta.creator_name }}
+		{% endif %}
+	</div>
+	{% endif %}
+	<div style="color: #888; font-size: 10pt;">{{ meta.keys }}</div>
+</div>
+
+<div class="meta-box">
+	<table>
+		<tr>
+			<th>Stages</th>
+			<td colspan="7" style="padding: 6px 10px;">
+				{% for s in stages %}
+				<div style="padding: 5px 0; border-bottom: 1px solid #eee; display: flex; align-items: baseline; gap: 10px;">
+					<span style="color: #888; font-size: 9pt; min-width: 60px; flex-shrink: 0;">Stage {{ s.stage }}</span>
+					{% if let Some(md5) = s.md5.as_ref() %}
+					<a href="/charts/{{ md5 }}">{{ s.label }}</a>
+					{% else %}
+					<span>{{ s.label }}</span>
+					{% endif %}
+				</div>
+				{% endfor %}
+			</td>
+		</tr>
+		{% if !meta.hash.is_empty() %}
+		<tr>
+			<th>Hash</th>
+			<td colspan="7" style="font-family: monospace; font-size: 9pt; word-break: break-all;">{{ meta.hash }}</td>
+		</tr>
+		{% endif %}
+	</table>
+</div>
+
+<h3>Play Status</h3>
+<table>
+	<tr>
+		<th style="width: 15%;"></th>
+		<th style="width: 17%;">Plays</th>
+		<th style="width: 17%;">Players</th>
+		<th style="width: 17%;">Clears (total)</th>
+		<th style="width: 17%;">Clear Players</th>
+		<th style="width: 17%;">Clear Rate</th>
+	</tr>
+	<tr>
+		<td style="color: #888;">total</td>
+		<td>{{ meta.play_count }}</td>
+		<td>{{ meta.play_people }}</td>
+		<td>{{ meta.clear_count }}</td>
+		<td>{{ meta.clear_people }}</td>
+		<td>{{ meta.clear_pct }}</td>
+	</tr>
+</table>
+
+<table>
+	<tr>
+		<th style="width: 20%;">FULLCOMBO</th>
+		<th style="width: 20%;">HARD</th>
+		<th style="width: 20%;">NORMAL</th>
+		<th style="width: 20%;">EASY</th>
+		<th style="width: 20%;">FAILED</th>
+	</tr>
+	<tr>
+		<td class="rank-clear-FULLCOMBO">{{ meta.fc_count }}</td>
+		<td class="rank-clear-HARD">{{ meta.hard_count }}</td>
+		<td class="rank-clear-NORMAL">{{ meta.normal_count }}</td>
+		<td class="rank-clear-EASY">{{ meta.easy_count }}</td>
+		<td class="rank-clear-FAILED">{{ meta.failed_count }}</td>
+	</tr>
+</table>
+
+{% if meta.play_people > 0 %}
+<div class="cb-legend">
+	<span class="cb-fc-l">FC ({{ meta.fc_count }})</span>
+	<span class="cb-hard-l">HARD ({{ meta.hard_count }})</span>
+	<span class="cb-norm-l">NORMAL ({{ meta.normal_count }})</span>
+	<span class="cb-easy-l">EASY ({{ meta.easy_count }})</span>
+	<span class="cb-fail-l">FAILED ({{ meta.failed_count }})</span>
+</div>
+<div class="clear-bar" style="width: 100%;">
+	<div class="cb-fc"   style="width: {{ meta.fc_count     * 100 / meta.play_people }}%;"></div>
+	<div class="cb-hard" style="width: {{ meta.hard_count   * 100 / meta.play_people }}%;"></div>
+	<div class="cb-norm" style="width: {{ meta.normal_count * 100 / meta.play_people }}%;"></div>
+	<div class="cb-easy" style="width: {{ meta.easy_count   * 100 / meta.play_people }}%;"></div>
+	<div class="cb-fail" style="width: {{ meta.failed_count * 100 / meta.play_people }}%;"></div>
+</div>
+{% endif %}
+
+<h3>
+	Leaderboard
+	<span style="font-size: 11pt; color: #88a;">({{ total_rows }} entries)</span>
+</h3>
+
+<div class="pagination">
+	{% if page > 1 %}
+	<a href="/courses/{{ meta.course_id }}?page={{ page - 1 }}">&laquo; prev</a>
+	{% endif %}
+	page {{ page }} of {{ total_pages }}
+	{% if page < total_pages %}
+	<a href="/courses/{{ meta.course_id }}?page={{ page + 1 }}">next &raquo;</a>
+	{% endif %}
+</div>
+
+<table>
+	<thead>
+		<tr>
+			<th>Rank</th>
+			<th>Player</th>
+			<th>Dan</th>
+			<th>Clear</th>
+			<th>Grade</th>
+			<th>Score</th>
+			<th>Combo</th>
+			<th>B+P</th>
+			<th>PG</th>
+			<th>GR</th>
+			<th>GD</th>
+			<th>BD</th>
+			<th>PR</th>
+			<th>OP</th>
+			<th>OP</th>
+			{% if meta.is_dp %}<th>OP</th><th>OP</th>{% endif %}
+			<th>Input</th>
+			<th>Client</th>
+		</tr>
+	</thead>
+	<tbody>
+		{% for r in rows %}
+		<tr{% if r.is_cheated %} class="row-cheated"{% endif %}>
+			<td align="center">{{ r.rank }}</td>
+			<td>
+				<a href="/players/{{ r.player_id }}">{{ r.player_name }}</a>
+				{% if r.is_cheated %}<div class="cheated-label">CHEATED</div>{% endif %}
+			</td>
+			<td>{{ r.dan }}</td>
+			<td class="rank-clear-{{ r.clear_class }}">{{ r.clear_type }}</td>
+			<td>
+				{{ r.letter_rank }}
+				{% if !r.grade_delta.is_empty() %}
+				<div style="font-size: 9pt; color: #88a; font-family: monospace; margin-top: 2px;">{{ r.grade_delta }}</div>
+				{% endif %}
+			</td>
+			<td style="white-space: pre-wrap;">{{ r.score_display }}</td>
+			<td>{{ r.combo_display }}</td>
+			<td>{{ r.bad_poor }}</td>
+			<td>{{ r.pgreat }}</td>
+			<td>{{ r.great }}</td>
+			<td>{{ r.good }}</td>
+			<td>{{ r.bad }}</td>
+			<td>{{ r.poor }}</td>
+			<td>{{ r.option_1 }}</td>
+			<td>{{ r.option_2 }}</td>
+			{% if meta.is_dp %}<td>{{ r.option_3 }}</td><td>{{ r.option_4 }}</td>{% endif %}
+			<td>{{ r.input }}</td>
+			<td>{{ r.client }}</td>
+		</tr>
+		{% if !r.note.is_empty() %}
+		<tr class="gray">
+			<td></td>
+			<td colspan="{% if meta.is_dp %}18{% else %}16{% endif %}" style="white-space: pre-wrap;">{{ r.note }}</td>
+		</tr>
+		{% endif %}
+		{% endfor %}
+		{% if rows.is_empty() %}
+		<tr><td colspan="{% if meta.is_dp %}19{% else %}17{% endif %}" style="color: #888; text-align: center; padding: 12px;">No scores on this page.</td></tr>
+		{% endif %}
+	</tbody>
+</table>
+
+<div class="pagination">
+	{% if page > 1 %}
+	<a href="/courses/{{ meta.course_id }}?page={{ page - 1 }}">&laquo; prev</a>
+	{% endif %}
+	page {{ page }} of {{ total_pages }}
+	{% if page < total_pages %}
+	<a href="/courses/{{ meta.course_id }}?page={{ page + 1 }}">next &raquo;</a>
+	{% endif %}
+</div>
+
+{% endblock %}

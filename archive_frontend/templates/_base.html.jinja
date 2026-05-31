@@ -1,0 +1,143 @@
+<!doctype html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1" />
+		<title>{% block title %}LR2IR Archive{% endblock %}</title>
+		<style>
+			/* reset */
+			* { margin: 0; padding: 0; line-height: 140%; box-sizing: border-box; }
+			body { background: #000; color: #eef; font-size: 10pt; font-family: sans-serif; }
+			a:link { color: #44e; }
+			a:hover { color: red; }
+
+			/* headings */
+			h1 { color: #eef; font-size: 180%; padding: 10px; text-align: center; font-weight: normal; background: #222; }
+			h2 { color: #eef; font-size: 150%; font-weight: normal; margin: 8px 0 2px; }
+			h3 { margin: 10px 0 4px; color: #eee; font-size: 130%; padding: 4px; border-bottom: 1px solid #555; font-weight: normal; }
+			h4 { color: #aab; font-weight: normal; margin-bottom: 6px; }
+
+			/* tables */
+			table { width: 100%; font-size: 10pt; border-collapse: collapse; margin-bottom: 16px; }
+			th { background: #669; color: #eef; border-left: 1px solid #ccc; border-top: 1px solid #ccc; font-weight: normal; padding: 2px 4px; text-align: left; white-space: nowrap; }
+			td { color: #333; border-left: 1px solid #ccc; border-top: 1px solid #ccc; padding: 2px 4px; }
+			tr { background: #fff; }
+			tr:hover td { background: #eef; }
+			.gray { background: #eef; color: #888; font-size: 9pt; }
+
+			/* layout */
+			#box  { text-align: left; width: min(950px, 100%); margin: 0 auto; }
+			#menu { background: #555; padding: 6px 10px; margin-top: 4px; border-top: 3px solid #333; border-bottom: 3px solid #333; color: #eef; }
+			#menu a { color: #aef; margin: 0 6px; text-decoration: none; font-size: 11pt; }
+			#menu a:hover { color: red; }
+			#foot { text-align: center; margin-top: 4px; background: #555; padding: 2px 4px; border-top: 3px solid #333; color: #afa; }
+
+			/* search bar */
+			.search-bar { margin: 10px 0; display: flex; gap: 6px; }
+			.search-bar input[type=text] { flex: 1; padding: 4px 8px; font-size: 11pt; background: #111; color: #eef; border: 1px solid #669; }
+			.search-bar button { padding: 4px 14px; background: #669; color: #eef; border: 1px solid #88a; cursor: pointer; font-size: 10pt; }
+			.search-bar button:hover { background: #778; }
+
+			/* pagination */
+			.pagination { margin: 8px 0 16px; color: #aab; }
+			.pagination a { margin: 0 4px; }
+
+			/* tags / key labels */
+			.tag    { background: #336; color: #adf; padding: 1px 5px; border-radius: 2px; font-size: 9pt; margin-right: 3px; display: inline-block; }
+			.keys-7  { color: #4af; }
+			.keys-9  { color: #b4f; }
+			.keys-14 { color: #fa4; }
+
+			/* clear type colours */
+			.rank-clear-FULLCOMBO { color: #2ee8d8; font-weight: bold; }
+			.rank-clear-HARD      { color: #f84; }
+			.rank-clear-NORMAL    { color: #4af; }
+			.rank-clear-EASY      { color: #2a6; }
+			.rank-clear-FAILED    { color: #888; }
+
+			/* clear-rate bar */
+			.clear-bar { display: flex; height: 14px; margin: 6px 0; border: 1px solid #555; overflow: hidden; }
+			.table-progress { table-layout: fixed; }
+			.table-progress .name-cell { width: 16%; white-space: nowrap; }
+			.table-progress .bar-cell { width: auto; padding: 4px 8px; }
+			.table-progress .count-cell { width: 9%; text-align: right; white-space: nowrap; }
+			.table-progress .clear-bar { width: 100%; margin: 2px 0; height: 16px; }
+			.cb-fc   { background: #2ee8d8; }
+			.cb-hard { background: #f84; }
+			.cb-norm { background: #4af; }
+			.cb-easy { background: #4f4; }
+			.cb-fail { background: #444; }
+			.cb-legend { display: flex; gap: 12px; font-size: 9pt; color: #aab; margin-bottom: 4px; }
+			.cb-legend span::before { content: "■ "; }
+			.cb-fc-l   { color: #2ee8d8; }
+			.cb-hard-l { color: #f84; }
+			.cb-norm-l { color: #4af; }
+			.cb-easy-l { color: #4f4; }
+			.cb-fail-l { color: #888; }
+
+			/* cheater highlighting */
+			tr.row-cheated td { background: #fdd !important; }
+			tr.row-cheated:hover td { background: #fcc !important; }
+			.profile-box-cheated { border-color: #c44; background: #1a0808; }
+			.cheated-label { color: #c00; font-size: 8pt; font-weight: bold; letter-spacing: 0.06em; margin-top: 2px; }
+
+			/* notice / info box */
+			.notice { background: #111; border: 1px solid #446; color: #aab; padding: 8px 14px; margin: 8px 0; font-size: 9pt; }
+
+			@media (max-width: 970px) {
+				#box  { width: 100%; padding: 0 8px; }
+			}
+
+			{% block extra_styles %}{% endblock %}
+		</style>
+	</head>
+	<body>
+		<div align="center">
+			<div id="box">
+				{% block h1 %}
+				<h1>LR2IR Archive</h1>
+
+<div style="background: #111; border: 2px solid #446; color: #ccddff; padding: 16px 20px; margin: 10px 0; line-height: 170%;">
+	&#128196; <strong>About this archive</strong><br />
+	<span style="font-weight: normal; font-size: 11pt;">
+		This is a read-only archive of LR2IR.
+		<br />
+		<span style="font-weight: normal; color: red; font-size: 11pt;">This is NOT an IR. You cannot connect to it or submit scores.</span>
+		<br />
+		You can browse the pages, use the
+		<a
+			href="/api/charts/f8dcdfe070630bbb365323c662561a1a"
+			target="_blank"
+			style="color: #4f4"
+		>
+			md5 leaderboard API</a>, or just <a
+			href="https://github.com/zkldi/lr2ir-dataset"
+			target="_blank"
+			style="color: #4f4"
+			>download the database on GitHub</a
+		>
+	</span>
+</div>
+				{% endblock %}
+				<div id="menu">
+				<a href="/">Home</a> | <a href="/charts">Browse Charts</a> |
+				<a href="/players">Browse Players</a> |
+				<a href="/courses">Browse Courses</a> |
+				<a href="/bbs">Browse BBS</a> |
+				<a href="/tables">Difficulty Tables</a>
+				</div>
+				{% block content %}{% endblock %}
+				<div id="foot">
+					LR2IR Archive (read-only)
+					-
+					<a
+						href="https://github.com/zkldi/lr2ir-dataset"
+						target="_blank"
+						style="color: #4f4"
+						>download the database on GitHub</a
+					>
+				</div>
+			</div>
+		</div>
+	</body>
+</html>

@@ -1,0 +1,16 @@
+{% extends "_base.html.jinja" %}
+
+{% block title %}{{ status }} {{ title }} - LR2IR Archive{% endblock %}
+
+{% block h1 %}<h1>{{ status }} {{ title }}</h1>{% endblock %}
+
+{% block content %}
+<div style="padding: 40px 10px; text-align: center;">
+	<div style="font-size: 500%; font-weight: bold; color: #446; line-height: 1; margin-bottom: 12px;">{{ status }}</div>
+	<div style="font-size: 140%; color: #aab; margin-bottom: 16px;">{{ title }}</div>
+	{% if !message.is_empty() %}
+	<div style="color: #88a; font-size: 10pt; margin-bottom: 24px;">{{ message }}</div>
+	{% endif %}
+	<a href="/" style="padding: 6px 20px; border: 1px solid #446; color: #aef; text-decoration: none; font-size: 11pt;">&larr; Back to home</a>
+</div>
+{% endblock %}

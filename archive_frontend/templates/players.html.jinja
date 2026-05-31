@@ -1,0 +1,58 @@
+{% extends "_base.html.jinja" %}
+
+{% block title %}Players - LR2IR Archive{% endblock %}
+
+{% block content %}
+<h3>Players <span style="font-size: 11pt; color: #88a;">({{ total }} with scraped profiles, sorted by play count)</span></h3>
+
+<form class="search-bar" method="get" action="/players">
+	<input type="text" name="q" value="{{ q }}" placeholder="Search by player name…" />
+	<button type="submit">Search</button>
+	{% if !q.is_empty() %}
+	<a href="/players" style="padding: 4px 10px; color: #aab; text-decoration: none; font-size: 10pt; line-height: 2;">✕ clear</a>
+	{% endif %}
+</form>
+
+<table>
+	<thead>
+		<tr>
+			<th>#</th>
+			<th style="width: 38%;">Name</th>
+			<th style="width: 8%;">ID</th>
+			<th style="width: 18%;">Dan</th>
+			<th style="width: 18%;">Play Count</th>
+			<th style="width: 18%;">FCs</th>
+		</tr>
+	</thead>
+	<tbody>
+		{% for p in players %}
+		<tr{% if p.is_cheater %} class="row-cheated"{% else if !p.privacy_level.is_empty() %} style="color: #666;"{% endif %}>
+			<td style="color: #888;">{{ row_start + loop.index0 }}</td>
+			<td>
+				<a href="/players/{{ p.player_id }}"{% if !p.privacy_level.is_empty() && !p.is_cheater %} style="color: #888;"{% endif %}>{{ p.name }}</a>
+				{% if p.is_cheater %}<div class="cheated-label">CHEATED</div>{% endif %}
+				{% if p.privacy_level == "full" %}<span title="Private profile" style="margin-left: 5px; font-size: 9pt;">🔒</span>
+				{% else if p.privacy_level == "playcount" %}<span title="Play counts hidden" style="margin-left: 5px; font-size: 9pt;">🔒</span>{% endif %}
+			</td>
+			<td style="color: #888;">{{ p.player_id }}</td>
+			<td>{{ p.dan }}</td>
+			<td>{{ p.play_count }}</td>
+			<td>{{ p.fc_count }}</td>
+		</tr>
+		{% endfor %}
+		{% if players.is_empty() %}
+		<tr><td colspan="6" style="color: #888; text-align: center; padding: 12px;">No players found.</td></tr>
+		{% endif %}
+	</tbody>
+</table>
+
+<div class="pagination">
+	{% if page > 1 %}
+	<a href="/players?page={{ page - 1 }}&q={{ q|urlencode }}">&laquo; prev</a>
+	{% endif %}
+	page {{ page }} of {{ total_pages }}
+	{% if page < total_pages %}
+	<a href="/players?page={{ page + 1 }}&q={{ q|urlencode }}">next &raquo;</a>
+	{% endif %}
+</div>
+{% endblock %}

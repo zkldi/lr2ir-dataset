@@ -1,0 +1,20 @@
+[package]
+name = "lr2ir_archive_frontend_tablegen"
+version = "0.1.0"
+edition = "2021"
+
+[[bin]]
+name = "lr2ir_archive_frontend_tablegen"
+path = "src/main.rs"
+
+[dependencies]
+tokio = { workspace = true }
+anyhow = { workspace = true }
+tracing = { workspace = true }
+tracing-subscriber = { workspace = true }
+clap = { workspace = true }
+sqlx = { workspace = true, features = ["runtime-tokio", "sqlite", "macros"] }
+reqwest = { workspace = true, features = ["rustls-tls"] }
+regex.workspace = true
+serde_json.workspace = true
+url.workspace = true

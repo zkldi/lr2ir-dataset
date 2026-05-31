@@ -1,0 +1,57 @@
+{% extends "_base.html.jinja" %}
+
+{% block title %}BBS - LR2IR Archive{% endblock %}
+
+{% block content %}
+<h3>BBS <span style="font-size: 11pt; color: #88a;">({{ total }} messages, newest first)</span></h3>
+
+<form class="search-bar" method="get" action="/bbs">
+	<input type="text" name="q" value="{{ q }}" placeholder="Search by message or player name…" />
+	<button type="submit">Search</button>
+	{% if !q.is_empty() %}
+	<a href="/bbs" style="padding: 4px 10px; color: #aab; text-decoration: none; font-size: 10pt; line-height: 2;">✕ clear</a>
+	{% endif %}
+</form>
+
+<table>
+	<thead>
+		<tr>
+			<th>#</th>
+			<th style="width: 18%;">From</th>
+			<th style="width: 62%;">Message</th>
+			<th style="width: 20%;">Posted</th>
+		</tr>
+	</thead>
+	<tbody>
+		{% for b in messages %}
+		<tr>
+			<td style="color: #888;">{{ row_start + loop.index0 }}</td>
+			<td>
+				{% if b.player_id > 0 %}
+				<a href="/players/{{ b.player_id }}">{{ b.commenter_name }}</a>
+				{% else if !b.commenter_name.is_empty() %}
+				{{ b.commenter_name }}
+				{% else %}
+				<span style="color: #888;">#{{ b.player_id }}</span>
+				{% endif %}
+			</td>
+			<td>{{ b.message }}</td>
+			<td style="color: #888;">{{ b.posted_at }}</td>
+		</tr>
+		{% endfor %}
+		{% if messages.is_empty() %}
+		<tr><td colspan="4" style="color: #888; text-align: center; padding: 12px;">No messages found.</td></tr>
+		{% endif %}
+	</tbody>
+</table>
+
+<div class="pagination">
+	{% if page > 1 %}
+	<a href="/bbs?page={{ page - 1 }}&q={{ q|urlencode }}">&laquo; prev</a>
+	{% endif %}
+	page {{ page }} of {{ total_pages }}
+	{% if page < total_pages %}
+	<a href="/bbs?page={{ page + 1 }}&q={{ q|urlencode }}">next &raquo;</a>
+	{% endif %}
+</div>
+{% endblock %}

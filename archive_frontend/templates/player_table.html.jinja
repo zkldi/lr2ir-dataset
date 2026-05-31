@@ -1,0 +1,50 @@
+{% extends "_base.html.jinja" %}
+
+{% block title %}{{ player.name }} — {{ table.name }} - LR2IR Archive{% endblock %}
+
+{% block content %}
+<div style="margin-bottom: 8px;">
+	<a href="/players/{{ player.player_id }}" style="color: #88a;">&#8592; {{ player.name }}</a>
+	&nbsp;/&nbsp;
+	<a href="/tables/{{ table.id }}" style="color: #88a;">{{ table.name }}</a>
+</div>
+
+<div style="text-align: center; padding: 14px 10px 12px; background: #0a0a18; border-bottom: 2px solid #446; margin-bottom: 10px;">
+	<div style="color: #88a; font-size: 10pt; letter-spacing: 0.08em; text-transform: uppercase; margin-bottom: 4px;">{{ player.name }}</div>
+	<div style="color: #eef; font-size: 175%; font-weight: bold;">{{ table.name }}</div>
+	<div style="color: #888; font-size: 160%; margin-top: 4px;">{{ table.symbol }}</div>
+</div>
+
+<h3>Levels</h3>
+{% if !levels.is_empty() %}
+<div class="cb-legend">
+	<span class="cb-fc-l">FC</span>
+	<span class="cb-hard-l">HARD</span>
+	<span class="cb-norm-l">NORMAL</span>
+	<span class="cb-easy-l">EASY</span>
+	<span class="cb-fail-l">FAILED</span>
+	<span style="color: #555;">■ unplayed</span>
+</div>
+{% endif %}
+<table class="table-progress">
+	<thead>
+		<tr>
+			<th class="name-cell">Level</th>
+			<th class="bar-cell">Clear types</th>
+			<th class="count-cell">Played</th>
+		</tr>
+	</thead>
+	<tbody>
+		{% for lv in levels %}
+		<tr>
+			<td class="name-cell"><a href="/players/{{ player.player_id }}/tables/{{ table.id }}/{{ lv.level|urlencode }}">{{ table.symbol }}{{ lv.level }}</a></td>
+			<td class="bar-cell">{% let clears = lv.clears %}{% include "_clear_bar_row.html.jinja" %}</td>
+			<td class="count-cell">{{ lv.clears.scored() }} / {{ lv.clears.total }}</td>
+		</tr>
+		{% endfor %}
+		{% if levels.is_empty() %}
+		<tr><td colspan="3" style="color: #888; text-align: center; padding: 12px;">No levels found.</td></tr>
+		{% endif %}
+	</tbody>
+</table>
+{% endblock %}

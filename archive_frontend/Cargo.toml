@@ -1,0 +1,20 @@
+[package]
+name = "lr2ir_archive_frontend"
+version = "0.1.0"
+edition = "2021"
+
+[[bin]]
+name = "lr2ir_archive_frontend"
+path = "src/main.rs"
+
+[dependencies]
+tokio = { workspace = true }
+anyhow = { workspace = true }
+tracing = { workspace = true }
+tracing-subscriber = { workspace = true }
+clap = { workspace = true }
+dotenvy = { workspace = true }
+axum.workspace = true
+askama.workspace = true
+sqlx = { workspace = true, features = ["runtime-tokio", "sqlite", "macros"] }
+serde = { workspace = true, features = ["derive"] }

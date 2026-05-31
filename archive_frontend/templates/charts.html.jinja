@@ -1,0 +1,56 @@
+{% extends "_base.html.jinja" %}
+
+{% block title %}Charts - LR2IR Archive{% endblock %}
+
+{% block content %}
+<h3>Charts <span style="font-size: 11pt; color: #88a;">({{ total }} total, sorted by play count)</span></h3>
+
+<form class="search-bar" method="get" action="/charts">
+	<input type="text" name="q" value="{{ q }}" placeholder="Search title, artist, genre, or MD5…" />
+	<button type="submit">Search</button>
+	{% if !q.is_empty() %}
+	<a href="/charts" style="padding: 4px 10px; color: #aab; text-decoration: none; font-size: 10pt; line-height: 2;">✕ clear</a>
+	{% endif %}
+</form>
+
+<table>
+	<thead>
+		<tr>
+			<th style="width: 62%;">Chart</th>
+			<th style="width: 6%;">Gamemode</th>
+			<th style="width: 6%;">Level</th>
+			<th style="width: 9%;">Playcount</th>
+			<th style="width: 9%;">Players</th>
+			<th style="width: 8%;">Clear%</th>
+		</tr>
+	</thead>
+	<tbody>
+		{% for c in charts %}
+		<tr>
+			<td style="padding: 4px 6px; line-height: 160%;">
+				<div><a href="/charts/{{ c.md5 }}" style="font-size: 11pt; font-weight: bold;">{{ c.title }}</a></div>
+				<div style="font-size: 9pt; color: #888;">{{ c.artist }} - <span style="color: #669; font-style: italic;">{{ c.genre }}</span></div>
+			</td>
+			<td class="{% if c.keys.contains("14") %}keys-14{% else if c.keys.contains("9") %}keys-9{% else %}keys-7{% endif %}">{{ c.keys }}</td>
+			<td>{{ c.level }}</td>
+			<td>{{ c.play_count }}</td>
+			<td>{{ c.play_people }}</td>
+			<td>{{ c.clear_pct }}</td>
+		</tr>
+		{% endfor %}
+		{% if charts.is_empty() %}
+		<tr><td colspan="6" style="color: #888; text-align: center; padding: 12px;">No charts found.</td></tr>
+		{% endif %}
+	</tbody>
+</table>
+
+<div class="pagination">
+	{% if page > 1 %}
+	<a href="/charts?page={{ page - 1 }}&q={{ q }}">&laquo; prev</a>
+	{% endif %}
+	page {{ page }} of {{ total_pages }}
+	{% if page < total_pages %}
+	<a href="/charts?page={{ page + 1 }}&q={{ q }}">next &raquo;</a>
+	{% endif %}
+</div>
+{% endblock %}

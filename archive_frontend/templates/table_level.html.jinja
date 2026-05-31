@@ -1,0 +1,51 @@
+{% extends "_base.html.jinja" %}
+
+{% block title %}{{ table.symbol }}{{ level }} ({{ table.name }}) - LR2IR Archive{% endblock %}
+
+{% block content %}
+<div style="margin-bottom: 8px;">
+	<a href="/tables" style="color: #88a;">&#8592; All Tables</a>
+	&nbsp;/&nbsp;
+	<a href="/tables/{{ table.id }}" style="color: #88a;">{{ table.name }}</a>
+</div>
+
+<div style="text-align: center; padding: 14px 10px 12px; background: #0a0a18; border-bottom: 2px solid #446; margin-bottom: 10px;">
+	<div style="color: #88a; font-size: 10pt; letter-spacing: 0.08em; text-transform: uppercase; margin-bottom: 4px;">{{ table.name }}</div>
+	<div style="color: #eef; font-size: 200%; font-weight: bold;">{{ table.symbol }}{{ level }}</div>
+</div>
+
+<table>
+	<thead>
+		<tr>
+			<th>Title</th>
+			<th>Keys</th>
+			<th style="text-align: right;">Plays</th>
+			<th style="text-align: right;">Clear %</th>
+		</tr>
+	</thead>
+	<tbody>
+		{% for c in charts %}
+		{% if c.in_archive %}
+		<tr>
+			<td>
+				<a href="/charts/{{ c.md5 }}">{{ c.title }}</a>
+				<div style="font-size: 9pt; color: #888;">{{ c.artist }}</div>
+			</td>
+			<td class="{% if c.keys.contains("14") %}keys-14{% else if c.keys.contains("9") %}keys-9{% else %}keys-7{% endif %}">{{ c.keys }}</td>
+			<td style="text-align: right;">{{ c.play_count }}</td>
+			<td style="text-align: right;">{{ c.clear_pct }}</td>
+		</tr>
+		{% else %}
+		<tr style="color: #555;">
+			<td colspan="4" style="font-family: monospace; font-size: 9pt;">
+				{{ c.md5 }} <span style="color: #444; font-family: sans-serif;">(not in archive)</span>
+			</td>
+		</tr>
+		{% endif %}
+		{% endfor %}
+		{% if charts.is_empty() %}
+		<tr><td colspan="4" style="color: #888; text-align: center; padding: 12px;">No charts at this level.</td></tr>
+		{% endif %}
+	</tbody>
+</table>
+{% endblock %}

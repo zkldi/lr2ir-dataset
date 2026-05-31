@@ -1,0 +1,8 @@
+target/
+.git/
+.gitignore
+*.db
+.env
+.env.*
+output/
+.sqlx/

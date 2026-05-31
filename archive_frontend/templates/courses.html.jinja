@@ -1,0 +1,53 @@
+{% extends "_base.html.jinja" %}
+
+{% block title %}Courses — LR2IR Archive{% endblock %}
+
+{% block content %}
+<h3>Courses <span style="font-size: 11pt; color: #88a;">({{ total }} total, sorted by player count)</span></h3>
+
+<form class="search-bar" method="get" action="/courses">
+	<input type="text" name="q" value="{{ q }}" placeholder="Search by course title…" />
+	<button type="submit">Search</button>
+	{% if !q.is_empty() %}
+	<a href="/courses" style="padding: 4px 10px; color: #aab; text-decoration: none; font-size: 10pt; line-height: 2;">✕ clear</a>
+	{% endif %}
+</form>
+
+<table>
+	<thead>
+		<tr>
+			<th style="width: 38%;">Title</th>
+			<th style="width: 16%;">Category</th>
+			<th style="width: 8%;">Keys</th>
+			<th style="width: 18%;">Creator</th>
+			<th style="text-align: right; width: 10%;">Plays</th>
+			<th style="text-align: right; width: 10%;">Clear %</th>
+		</tr>
+	</thead>
+	<tbody>
+		{% for c in courses %}
+		<tr>
+			<td><a href="/courses/{{ c.course_id }}">{{ c.title }}</a></td>
+			<td style="color: #aab;">{{ c.category }}</td>
+			<td class="{% if c.keys.contains("14") %}keys-14{% else if c.keys.contains("9") %}keys-9{% else %}keys-7{% endif %}">{{ c.keys }}</td>
+			<td>{{ c.creator_name }}</td>
+			<td style="text-align: right;">{{ c.play_people }}</td>
+			<td style="text-align: right;">{{ c.clear_pct }}</td>
+		</tr>
+		{% endfor %}
+		{% if courses.is_empty() %}
+		<tr><td colspan="6" style="color: #888; text-align: center; padding: 12px;">No courses found.</td></tr>
+		{% endif %}
+	</tbody>
+</table>
+
+<div class="pagination">
+	{% if page > 1 %}
+	<a href="/courses?page={{ page - 1 }}&q={{ q }}">&laquo; prev</a>
+	{% endif %}
+	page {{ page }} of {{ total_pages }}
+	{% if page < total_pages %}
+	<a href="/courses?page={{ page + 1 }}&q={{ q }}">next &raquo;</a>
+	{% endif %}
+</div>
+{% endblock %}

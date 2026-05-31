@@ -1,0 +1,32 @@
+{% extends "_base.html.jinja" %}
+
+{% block title %}Difficulty Tables - LR2IR Archive{% endblock %}
+
+{% block content %}
+<h3>Difficulty Tables
+	{% if let Some(ts) = rendered_at %}
+	<span style="font-size: 10pt; font-weight: normal; color: #888; margin-left: 10px;">fetched {{ ts }}</span>
+	{% endif %}
+</h3>
+<table>
+	<thead>
+		<tr>
+			<th>Table</th>
+			<th>Symbol</th>
+			<th style="text-align: right;">Charts</th>
+		</tr>
+	</thead>
+	<tbody>
+		{% for t in tables %}
+		<tr>
+			<td><a href="/tables/{{ t.id }}">{{ t.name }}</a></td>
+			<td>{{ t.symbol }}</td>
+			<td style="text-align: right;">{{ t.chart_count }}</td>
+		</tr>
+		{% endfor %}
+		{% if tables.is_empty() %}
+		<tr><td colspan="3" style="color: #888; text-align: center; padding: 12px;">No tables found.</td></tr>
+		{% endif %}
+	</tbody>
+</table>
+{% endblock %}

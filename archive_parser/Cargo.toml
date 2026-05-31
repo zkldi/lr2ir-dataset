@@ -1,0 +1,25 @@
+[package]
+name = "lr2ir_archive_parser"
+version = "0.1.0"
+edition = "2021"
+
+[[bin]]
+name = "archive_parser"
+path = "src/main.rs"
+
+[dependencies]
+anyhow = { workspace = true }
+clap = { workspace = true }
+tokio = { workspace = true }
+# Add the sqlite backend on top of the shared workspace sqlx entry.
+sqlx = { workspace = true, features = ["sqlite"] }
+encoding_rs.workspace = true
+flate2.workspace = true
+scraper.workspace = true
+walkdir.workspace = true
+rayon.workspace = true
+chrono = { workspace = true }
+quick-xml = { workspace = true }
+
+[dev-dependencies]
+tokio = { workspace = true }
