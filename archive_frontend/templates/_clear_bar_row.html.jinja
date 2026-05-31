@@ -1,9 +1,9 @@
 {% if clears.total > 0 %}
 <div class="clear-bar">
-	<div class="cb-fc"   style="width: {{ clears.fc_count     * 100 / clears.total }}%;"></div>
-	<div class="cb-hard" style="width: {{ clears.hard_count   * 100 / clears.total }}%;"></div>
-	<div class="cb-norm" style="width: {{ clears.normal_count * 100 / clears.total }}%;"></div>
-	<div class="cb-easy" style="width: {{ clears.easy_count   * 100 / clears.total }}%;"></div>
-	<div class="cb-fail" style="width: {{ clears.failed_count * 100 / clears.total }}%;"></div>
+	{% if clears.fc_count     > 0 %}<div class="cb-fc"   style="flex: {{ clears.fc_count }};"></div>{% endif %}
+	{% if clears.hard_count   > 0 %}<div class="cb-hard" style="flex: {{ clears.hard_count }};"></div>{% endif %}
+	{% if clears.normal_count > 0 %}<div class="cb-norm" style="flex: {{ clears.normal_count }};"></div>{% endif %}
+	{% if clears.easy_count   > 0 %}<div class="cb-easy" style="flex: {{ clears.easy_count }};"></div>{% endif %}
+	{% if clears.failed_count > 0 %}<div class="cb-fail" style="flex: {{ clears.failed_count }};"></div>{% endif %}
 </div>
 {% endif %}
