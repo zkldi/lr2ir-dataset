@@ -7,6 +7,12 @@
 .stat-box { background: #0a0a20; border: 1px solid #446; padding: 12px 20px; flex: 1; text-align: center; }
 .stat-val { font-size: 180%; font-weight: bold; color: #eef; }
 .stat-lbl { font-size: 9pt; color: #88a; margin-top: 2px; }
+.browse-grid { display: flex; flex-wrap: wrap; margin-bottom: 16px; }
+.browse-cell { padding: 12px 16px; width: 25%; box-sizing: border-box; border: 1px solid #ccc; background: #fff; color: #333; }
+.browse-cell:hover { background: #eef; }
+.browse-cell a { font-size: 14pt; font-weight: bold; color: #44e; text-decoration: none; }
+.browse-cell a:hover { color: red; }
+.browse-cell span { color: #555; font-size: 10pt; }
 {% endblock %}
 
 {% block content %}
@@ -35,42 +41,28 @@
 </div>
 
 <h1>Browse</h1>
-<table>
-	<tr style="background: #fff;">
-		<td style="padding: 12px 16px; width: 25%;">
-			<a href="/charts" style="font-size: 14pt; font-weight: bold; color: #44e; text-decoration: none;">
-				&#127925; Charts
-			</a><br />
-			<span style="color: #555; font-size: 10pt;">Browse all scraped BMS charts with leaderboards. Search by title, artist, genre, or MD5.</span>
-		</td>
-		<td style="padding: 12px 16px; width: 25%;">
-			<a href="/players" style="font-size: 14pt; font-weight: bold; color: #44e; text-decoration: none;">
-				&#128100; Players
-			</a><br />
-			<span style="color: #555; font-size: 10pt;">Browse player profiles.</span>
-		</td>
-		<td style="padding: 12px 16px; width: 25%;">
-			<a href="/courses" style="font-size: 14pt; font-weight: bold; color: #44e; text-decoration: none;">
-				&#127942; Courses
-			</a><br />
-			<span style="color: #555; font-size: 10pt;">Browse courses (dan/stage sets) with full leaderboards.</span>
-		</td>
-		<td style="padding: 12px 16px; width: 25%;">
-			<a href="/tables" style="font-size: 14pt; font-weight: bold; color: #44e; text-decoration: none;">
-				&#128218; Difficulty Tables
-			</a><br />
-			<span style="color: #555; font-size: 10pt;">Browse the LR2IR archive through the lens of tables.</span>
-		</td>
-	</tr>
-	<tr style="background: #fff;">
-		<td style="padding: 12px 16px; width: 25%;">
-			<a href="/bbs" style="font-size: 14pt; font-weight: bold; color: #44e; text-decoration: none;">
-				&#128172; BBS
-			</a><br />
-			<span style="color: #555; font-size: 10pt;">Browse the site-wide 1-line message board archive.</span>
-		</td>
-	</tr>
-</table>
+<div class="browse-grid">
+	<div class="browse-cell">
+		<a href="/charts">&#127925; Charts</a><br />
+		<span>Browse all scraped BMS charts with leaderboards. Search by title, artist, genre, or MD5.</span>
+	</div>
+	<div class="browse-cell">
+		<a href="/players">&#128100; Players</a><br />
+		<span>Browse player profiles.</span>
+	</div>
+	<div class="browse-cell">
+		<a href="/courses">&#127942; Courses</a><br />
+		<span>Browse courses (dan/stage sets) with full leaderboards.</span>
+	</div>
+	<div class="browse-cell">
+		<a href="/tables">&#128218; Difficulty Tables</a><br />
+		<span>Browse the LR2IR archive through the lens of tables.</span>
+	</div>
+	<div class="browse-cell">
+		<a href="/bbs">&#128172; BBS</a><br />
+		<span>Browse the site-wide 1-line message board archive.</span>
+	</div>
+</div>
 <hr />
 <h1>API</h1>
 <table>
