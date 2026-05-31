@@ -7,7 +7,7 @@ mod players;
 mod tables;
 
 pub use bbs::bbs_list;
-pub use charts::{chart_detail, chart_detail_json, charts_list};
+pub use charts::{chart_by_bmsid, chart_detail, chart_detail_json, charts_list};
 pub use courses::{course_detail, courses_list};
 pub use ghosts::ghost_download;
 pub use player_tables::{fetch_player_table_list, player_table_level, player_table_summary};

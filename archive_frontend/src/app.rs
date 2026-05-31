@@ -6,8 +6,8 @@ use std::sync::Arc;
 use crate::cli::ServeArgs;
 use crate::fts::ensure_fts;
 use crate::handlers::{
-	bbs_list, chart_detail, chart_detail_json, charts_list, course_detail, courses_list,
-	ghost_download, handle_not_found, index, player_detail, player_table_level,
+	bbs_list, chart_by_bmsid, chart_detail, chart_detail_json, charts_list, course_detail,
+	courses_list, ghost_download, handle_not_found, index, player_detail, player_table_level,
 	player_table_summary, players_list, table_detail, table_level, tables_list,
 };
 use crate::site_stats::ensure_site_stats;
@@ -72,6 +72,7 @@ pub async fn serve(args: ServeArgs) -> Result<()> {
 		.route("/", get(index))
 		.route("/charts", get(charts_list))
 		.route("/charts/{md5}", get(chart_detail))
+		.route("/chartsbmsid/{bmsid}", get(chart_by_bmsid))
 		.route("/api/charts/{md5}", get(chart_detail_json))
 		.route("/players", get(players_list))
 		.route(

@@ -1,6 +1,6 @@
 use axum::extract::rejection::QueryRejection;
 use axum::extract::{Path, Query, State};
-use axum::response::{IntoResponse, Json};
+use axum::response::{IntoResponse, Json, Redirect};
 
 use crate::json::ChartLeaderboardJson;
 use crate::models::{
@@ -311,6 +311,22 @@ pub async fn chart_detail(
 		input_filter: input_filter_str,
 		input_qs,
 	})
+}
+
+pub async fn chart_by_bmsid(
+	State(state): State<AppState>,
+	Path(bmsid): Path<i64>,
+) -> impl IntoResponse {
+	let md5: Option<String> = sqlx::query_scalar("SELECT md5 FROM chart WHERE bmsid = ? LIMIT 1")
+		.bind(bmsid)
+		.fetch_optional(state.db.as_ref())
+		.await
+		.unwrap_or(None);
+
+	match md5 {
+		Some(md5) => Redirect::to(&format!("/charts/{md5}")).into_response(),
+		None => not_found(&format!("No chart found with bmsid {bmsid}.")),
+	}
 }
 
 pub async fn chart_detail_json(
