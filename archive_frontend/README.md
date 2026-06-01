@@ -28,7 +28,7 @@ We provide a docker image on ghcr.io:
 docker run --rm -p 3000:3000 \
 	-v "path/to/your/lr2ir-archive.db:/data/lr2ir-ar chive.db:ro" \
 	-v "path/to/your/tableinfo.db:/data/tableinfo.db:ro" \
-	ghcr.io/zkldi/lr2ir-archive-frontend:latest
+	ghcr.io/zkldi/lr2ir-dataset/archive-frontend:latest
 ```
 
 #### Compile it yourself
