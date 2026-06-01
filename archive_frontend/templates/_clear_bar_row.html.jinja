@@ -1,9 +1,11 @@
 {% if clears.total > 0 %}
+{% set unplayed = clears.total - clears.fc_count - clears.hard_count - clears.normal_count - clears.easy_count - clears.failed_count %}
 <div class="clear-bar">
 	{% if clears.fc_count     > 0 %}<div class="cb-fc"   style="flex: {{ clears.fc_count }};"></div>{% endif %}
 	{% if clears.hard_count   > 0 %}<div class="cb-hard" style="flex: {{ clears.hard_count }};"></div>{% endif %}
 	{% if clears.normal_count > 0 %}<div class="cb-norm" style="flex: {{ clears.normal_count }};"></div>{% endif %}
 	{% if clears.easy_count   > 0 %}<div class="cb-easy" style="flex: {{ clears.easy_count }};"></div>{% endif %}
 	{% if clears.failed_count > 0 %}<div class="cb-fail" style="flex: {{ clears.failed_count }};"></div>{% endif %}
+	{% if unplayed            > 0 %}<div class="cb-none" style="flex: {{ unplayed }};"></div>{% endif %}
 </div>
 {% endif %}
