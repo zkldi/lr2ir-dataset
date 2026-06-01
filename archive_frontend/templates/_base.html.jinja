@@ -7,7 +7,20 @@
 		<style>
 			/* reset */
 			* { margin: 0; padding: 0; line-height: 140%; box-sizing: border-box; }
-			body { background: #000; color: #eef; font-size: 10pt; font-family: sans-serif; }
+			html { min-height: 100%; overflow-x: hidden; }
+			body {
+				min-height: 100vh;
+				color: #eef;
+				font-size: 10pt;
+				font-family: sans-serif;
+				background-color: #000;
+				background-image: url("https://cdn.lr2ir.com/moreblue.webp");
+				background-repeat: no-repeat;
+				background-position: top right;
+				/* height = viewport; width scales with aspect ratio (may extend past sides) */
+				background-size: auto 100vh;
+				background-attachment: fixed;
+			}
 			a:link { color: #44e; }
 			a:hover { color: red; }
 
@@ -137,8 +150,9 @@
 						style="color: #4f4"
 						>download the database on GitHub</a
 					>
+					-
+					art by halninethousand
 				</div>
-
 			</div>
 		</div>
 	</body>
