@@ -10,9 +10,9 @@ Take a look in the `archive_frontend` folder for more information on that.
 
 ## Full Database
 
-**Link:** [lr2ir-archive.db.gz](https://cdn.lr2ir.com/lr2ir-archive.db.gz)
+**Link:** [lr2ir-archive-v3.db.gz](https://cdn.lr2ir.com/lr2ir-archive-v3.db.gz)
 
-**Shasum:** `ee3aaeaa77a9154ff80347f4abfa2d3f5a6c4f86bde99f6297e8fdb6367a9450`
+**Shasum:** `b8b94d9c67cf94411a71501c3533bd15877bd727fd687c060749fae29267b5cf`
 
 This is an 8GiB sqlite database containing every score, chart, course and player on LR2IR. This is likely the data you want.
 
@@ -31,9 +31,9 @@ Alternatively, use the instructions in `archive_frontend/README.md` to set up th
 
 ## Raw, unprocessed data
 
-**Link:** [lr2ir-raw-unprocessed-data.zip](https://cdn.lr2ir.com/lr2ir-raw-unprocessed-data.zip)
+**Link:** [lr2ir-raw-unprocessed-data-v3.zip](https://cdn.lr2ir.com/lr2ir-raw-unprocessed-data-v3.zip)
 
-**Checksum:** `aed0708aa213d4860f19629a65baf982a8355c01a3756566162b59cfb5841029`
+**Checksum:** `5d688beaf6d82ec0831019823432a53037a7136e16f684828f3f7ced88ef5e1f`
 
 This is the `html` output for all of the pages we scraped on LR2IR.
 

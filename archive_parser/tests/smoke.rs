@@ -52,7 +52,7 @@ async fn smoke_chart_parse() {
 
 	let mut total_pb = 0usize;
 	for page in 1u32.. {
-		let file = pages_path.join(format!("{page}.html"));
+		let file = pages_path.join(format!("{page}.html.gz"));
 		if !file.exists() {
 			break;
 		}

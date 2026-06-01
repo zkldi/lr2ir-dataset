@@ -157,7 +157,7 @@ pub async fn table_level(
 			.collect()
 	};
 
-	let charts = md5s
+	let mut charts: Vec<TableLevelChartItem> = md5s
 		.iter()
 		.map(|m| match chart_map.get(m) {
 			Some(r) => TableLevelChartItem {
@@ -180,6 +180,14 @@ pub async fn table_level(
 			},
 		})
 		.collect();
+
+	charts.sort_by(|a, b| {
+		a.in_archive
+			.cmp(&b.in_archive)
+			.reverse()
+			.then_with(|| a.title.to_lowercase().cmp(&b.title.to_lowercase()))
+			.then_with(|| a.md5.cmp(&b.md5))
+	});
 
 	render(TableLevelTemplate {
 		table: TableItem {

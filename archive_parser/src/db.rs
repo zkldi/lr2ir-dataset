@@ -1,6 +1,7 @@
 use anyhow::{Context, Result};
 use sqlx::{Executor, Sqlite, SqlitePool};
 use std::collections::HashSet;
+use std::path::Path;
 
 use crate::cheaters;
 use crate::parsers::{
@@ -453,6 +454,158 @@ where
 	.await
 	.context("upsert ghost")?;
 	Ok(())
+}
+
+/// SQL `CASE` mapping getplayerxml `clear` integers to LR2IR `clear_type` strings.
+pub fn playerxml_clear_type_case_sql() -> &'static str {
+	r#"CASE s.clear
+    WHEN 0 THEN 'NO PLAY'
+    WHEN 1 THEN 'FAILED'
+    WHEN 2 THEN 'EASY CLEAR'
+    WHEN 3 THEN 'NORMAL CLEAR'
+    WHEN 4 THEN 'HARD CLEAR'
+    WHEN 5 THEN 'FULLCOMBO'
+    ELSE 'FAILED'
+  END"#
+}
+
+/// Comma-separated cheater IDs for embedding in SQL `IN (...)` clauses.
+pub fn cheater_in_list_sql() -> String {
+	cheaters::CHEATER_IDS
+		.iter()
+		.map(|id| id.to_string())
+		.collect::<Vec<_>>()
+		.join(", ")
+}
+
+/// Calculate ranking data. We can't just use the score data for this as we're merging
+/// datasets.
+pub async fn refresh_pb_ranks_for_md5s(
+	conn: &mut sqlx::SqliteConnection,
+	md5s: &[String],
+) -> Result<u64> {
+	const BATCH_LOG: usize = 1_000;
+
+	for (i, md5) in md5s.iter().enumerate() {
+		sqlx::query(
+			r#"UPDATE pb
+			   SET rank = (
+			     SELECT rnk FROM (
+			       SELECT player_id,
+			              RANK() OVER (PARTITION BY md5 ORDER BY score DESC) AS rnk
+			       FROM pb
+			       WHERE md5 = ?
+			     ) ranked
+			     WHERE ranked.player_id = pb.player_id
+			   )
+			   WHERE md5 = ?"#,
+		)
+		.bind(md5)
+		.bind(md5)
+		.execute(&mut *conn)
+		.await
+		.with_context(|| format!("refresh pb ranks for md5={md5}"))?;
+
+		if (i + 1).is_multiple_of(BATCH_LOG) {
+			eprintln!("pb rank progress: {}/{}", i + 1, md5s.len());
+		}
+	}
+
+	Ok(md5s.len() as u64)
+}
+
+/// Bulk-import scores from `getplayerxml.db` into `pb`, skipping rows that already exist.
+///
+/// Returns `(rows_read, rows_inserted, md5s_ranked)`.
+pub async fn import_playerxml_scores(
+	pool: &SqlitePool,
+	playerxml_db_path: &Path,
+) -> Result<(u64, u64, u64)> {
+	let abs_path = std::fs::canonicalize(playerxml_db_path)
+		.with_context(|| format!("resolve path: {playerxml_db_path:?}"))?;
+	let abs_path = abs_path.to_string_lossy();
+
+	let insert_sql = format!(
+		r#"INSERT OR IGNORE INTO pb (
+  md5, rank, player_id, player_name, dan, clear_type, letter_rank,
+  score, score_max, combo, combo_max,
+  bad_poor, pgreat, great, good, bad, poor,
+  option_1, option_2, option_3, option_4,
+  input, client, note, is_cheated
+)
+SELECT
+  s.hash,
+  -1,
+  s.playerid,
+  COALESCE(p.name, ''),
+  '',
+  {clear_case},
+  '',
+  s.exscore,
+  s.notes * 2,
+  s.combo,
+  s.notes,
+  s.minbp,
+  s.pg, s.gr, s.gd, s.bd, s.pr,
+  '', '', NULL, NULL,
+  '', '', '',
+  CASE WHEN s.playerid IN ({cheater_list}) THEN 1 ELSE 0 END
+FROM px.scores s
+JOIN px.players p ON p.playerid = s.playerid
+WHERE length(s.hash) = 32
+  AND s.hash GLOB '[0-9a-fA-F][0-9a-fA-F]*'"#,
+		clear_case = playerxml_clear_type_case_sql(),
+		cheater_list = cheater_in_list_sql(),
+	);
+
+	// ATTACH is per-connection; hold one connection for the whole import.
+	let mut conn = pool.acquire().await.context("acquire sqlite connection")?;
+
+	sqlx::query("ATTACH DATABASE ? AS px")
+		.bind(abs_path.as_ref())
+		.execute(&mut *conn)
+		.await
+		.context("attach getplayerxml.db")?;
+
+	let rows_read: i64 = sqlx::query_scalar(
+		r#"SELECT COUNT(*) FROM px.scores s
+		   JOIN px.players p ON p.playerid = s.playerid
+		   WHERE length(s.hash) = 32
+		     AND s.hash GLOB '[0-9a-fA-F][0-9a-fA-F]*'"#,
+	)
+	.fetch_one(&mut *conn)
+	.await
+	.context("count getplayerxml scores")?;
+
+	let all_md5s: Vec<String> = sqlx::query_scalar(
+		r#"SELECT DISTINCT s.hash
+		   FROM px.scores s
+		   JOIN px.players p ON p.playerid = s.playerid
+		   WHERE length(s.hash) = 32
+		     AND s.hash GLOB '[0-9a-fA-F][0-9a-fA-F]*'"#,
+	)
+	.fetch_all(&mut *conn)
+	.await
+	.context("list getplayerxml md5s")?;
+
+	let rows_inserted = sqlx::query(&insert_sql)
+		.execute(&mut *conn)
+		.await
+		.context("import getplayerxml scores")?
+		.rows_affected();
+
+	let md5s_ranked = if all_md5s.is_empty() {
+		0
+	} else {
+		refresh_pb_ranks_for_md5s(&mut conn, &all_md5s).await?
+	};
+
+	sqlx::query("DETACH DATABASE px")
+		.execute(&mut *conn)
+		.await
+		.context("detach getplayerxml.db")?;
+
+	Ok((rows_read as u64, rows_inserted, md5s_ranked))
 }
 
 /// Recompute homepage counters and store them in `_site_stats`.

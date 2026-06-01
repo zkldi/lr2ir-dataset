@@ -1,12 +1,12 @@
 PRAGMA application_id = 1514880051;
-PRAGMA user_version = 2;
+PRAGMA user_version = 3;
 
 CREATE TABLE "meta" (
     version INTEGER NOT NULL,
     rendered_at TEXT NOT NULL
 ) STRICT;
 
-INSERT INTO meta (version, rendered_at) VALUES (2, CURRENT_TIMESTAMP);
+INSERT INTO meta (version, rendered_at) VALUES (3, CURRENT_TIMESTAMP);
 
 CREATE TABLE "chart" (
     md5              TEXT    PRIMARY KEY,

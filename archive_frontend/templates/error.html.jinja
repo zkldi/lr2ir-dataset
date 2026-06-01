@@ -4,13 +4,54 @@
 
 {% block h1 %}<h1>{{ status }} {{ title }}</h1>{% endblock %}
 
+{% block extra_styles %}
+.error-page { padding: 40px 10px; text-align: center; }
+.error-status { font-size: 500%; font-weight: bold; color: #446; line-height: 1; margin-bottom: 12px; }
+.error-title { font-size: 140%; color: #aab; margin-bottom: 16px; }
+.error-message { color: #88a; font-size: 10pt; margin-bottom: 24px; }
+.error-404-extra {
+	max-width: 420px;
+	margin: 0 auto 28px;
+	padding: 14px 18px;
+	background: #111;
+	border: 1px solid #446;
+	border-radius: 2px;
+	color: #aab;
+	font-size: 10pt;
+	line-height: 160%;
+	text-align: center;
+}
+.error-404-extra p { margin: 0 0 14px; }
+.error-404-extra img {
+	display: block;
+	width: 100%;
+	max-width: 360px;
+	margin: 0 auto;
+	border-radius: 2px;
+}
+.error-back {
+	display: inline-block;
+	padding: 6px 20px;
+	border: 1px solid #446;
+	color: #aef;
+	text-decoration: none;
+	font-size: 11pt;
+}
+.error-back:hover { color: red; border-color: #a44; }
+{% endblock %}
+
 {% block content %}
-<div style="padding: 40px 10px; text-align: center;">
-	<div style="font-size: 500%; font-weight: bold; color: #446; line-height: 1; margin-bottom: 12px;">{{ status }}</div>
-	<div style="font-size: 140%; color: #aab; margin-bottom: 16px;">{{ title }}</div>
+<div class="error-page">
+	<div class="error-status">{{ status }}</div>
+	<div class="error-title">{{ title }}</div>
 	{% if !message.is_empty() %}
-	<div style="color: #88a; font-size: 10pt; margin-bottom: 24px;">{{ message }}</div>
+	<div class="error-message">{{ message }}</div>
 	{% endif %}
-	<a href="/" style="padding: 6px 20px; border: 1px solid #446; color: #aef; text-decoration: none; font-size: 11pt;">&larr; Back to home</a>
+	{% if status == 404 %}
+	<div class="error-404-extra">
+		<p>Please note: we are missing some data.</p>
+	</div>
+	{% endif %}
+	<a href="/" class="error-back">&larr; Back to home</a>
 </div>
 {% endblock %}

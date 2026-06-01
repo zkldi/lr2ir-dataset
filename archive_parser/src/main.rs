@@ -22,9 +22,9 @@ use lr2ir_archive_parser::{
 )]
 struct Args {
 	/// Root directory containing scraped pages:
-	///   searchcgi/{md5:32}/{n}.html  →  chart ranking pages
-	///   courses/course_{id}/{n}.html →  course ranking pages
-	///   users/{id}.html              →  user profile pages
+	///   searchcgi/{md5:32}/{n}.html[.gz]  →  chart ranking pages
+	///   courses/course_{id}/{n}.html[.gz] →  course ranking pages
+	///   users/{id}.html[.gz]              →  user profile pages
 	#[arg(short, long)]
 	pages_dir: PathBuf,
 
@@ -89,9 +89,7 @@ async fn main() -> Result<()> {
 		WalkDir::new(&pages_dir)
 			.into_iter()
 			.filter_map(|e| e.ok())
-			.filter(|e| {
-				e.file_type().is_file() && e.path().extension().is_some_and(|x| x == "html")
-			})
+			.filter(|e| e.file_type().is_file() && is_html_page_file(e.path()))
 			// par_bridge hands each entry to rayon's thread pool.
 			.par_bridge()
 			.for_each_with(result_tx, |tx, entry| {
@@ -201,6 +199,9 @@ async fn main() -> Result<()> {
 
 	// ── BBS: copy from bbs/bbs.db if present ─────────────────────────────────
 	import_bbs(&pool, &args.pages_dir).await?;
+
+	// ── Player scores: fill gaps from getplayerxml/getplayerxml.db ───────────
+	import_playerxml(&pool, &args.pages_dir).await?;
 
 	db::refresh_site_stats(&pool).await?;
 	eprintln!("site stats cached");
@@ -351,6 +352,25 @@ async fn import_bbs(pool: &SqlitePool, pages_dir: &Path) -> Result<()> {
 	Ok(())
 }
 
+// ── getplayerxml score importer ───────────────────────────────────────────────
+
+async fn import_playerxml(pool: &SqlitePool, pages_dir: &Path) -> Result<()> {
+	let playerxml_db_path = pages_dir.join("getplayerxml/getplayerxml.db");
+	if !playerxml_db_path.exists() {
+		return Ok(());
+	}
+
+	eprintln!("importing player scores from {playerxml_db_path:?}");
+
+	let (rows_read, rows_inserted, md5s_ranked) =
+		db::import_playerxml_scores(pool, &playerxml_db_path).await?;
+	eprintln!(
+		"done: read {rows_read} getplayerxml scores, inserted {rows_inserted} new pb rows, re-ranked {md5s_ranked} charts"
+	);
+
+	Ok(())
+}
+
 // ── Page-type detection ───────────────────────────────────────────────────────
 
 enum PageType {
@@ -366,38 +386,45 @@ enum PageType {
 	User(i64),
 }
 
+fn is_html_page_file(path: &Path) -> bool {
+	path.file_name()
+		.and_then(|name| name.to_str())
+		.is_some_and(|name| name.ends_with(".html.gz") || name.ends_with(".html"))
+}
+
+fn strip_html_page_suffix(name: &str) -> Option<&str> {
+	name.strip_suffix(".html.gz")
+		.or_else(|| name.strip_suffix(".html"))
+}
+
 fn detect_page_type(rel: &Path) -> Option<PageType> {
 	let parts: Vec<_> = rel.components().collect();
 
 	match parts.as_slice() {
-		// user/{id}.html
+		// users/{id}.html[.gz]
 		[Component::Normal(a), Component::Normal(b)] => {
 			let a = a.to_str()?;
 			let b = b.to_str()?;
-			if a == "users" && b.ends_with(".html") {
-				let id: i64 = b.trim_end_matches(".html").parse().ok()?;
+			if a == "users" {
+				let id: i64 = strip_html_page_suffix(b)?.parse().ok()?;
 				Some(PageType::User(id))
 			} else {
 				None
 			}
 		}
-		// searchcgi/{md5}/{n}.html or courses/{id}/{n}.html
+		// searchcgi/{md5}/{n}.html[.gz] or courses/{id}/{n}.html[.gz]
 		[Component::Normal(a), Component::Normal(b), Component::Normal(c)] => {
 			let a = a.to_str()?;
 			let b = b.to_str()?;
 			let c = c.to_str()?;
-			if !c.ends_with(".html") {
-				return None;
-			}
+			let page: u32 = strip_html_page_suffix(c)?.parse().ok()?;
 			if a == "searchcgi" && b.len() == 32 && b.bytes().all(|c| c.is_ascii_hexdigit()) {
-				let page: u32 = c.trim_end_matches(".html").parse().ok()?;
 				Some(PageType::SearchCgi {
 					md5: b.to_string(),
 					page,
 				})
 			} else if a == "courses" && b.bytes().all(|c| c.is_ascii_digit()) {
 				let course_id: i64 = b.parse().ok()?;
-				let page: u32 = c.trim_end_matches(".html").parse().ok()?;
 				Some(PageType::Course { course_id, page })
 			} else {
 				None
