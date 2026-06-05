@@ -67,7 +67,7 @@ static TABLES: &[TableDef] = &[
 	},
 	TableDef {
 		name: "DP Satellite",
-		symbol: "sl",
+		symbol: "DPsl",
 		url: "https://stellabms.xyz/dp/table.html",
 	},
 	TableDef {
@@ -101,7 +101,7 @@ static TABLES: &[TableDef] = &[
 		url: "https://ladymade-star.github.io/luminous/",
 	},
 	TableDef {
-		name: "Gachimjoy",
+		name: "Gachimijoy",
 		symbol: "双",
 		url: "http://su565fx.web.fc2.com/Gachimijoy/gachimijoy.html",
 	},
