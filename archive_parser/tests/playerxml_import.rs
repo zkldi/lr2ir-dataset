@@ -196,7 +196,7 @@ async fn playerxml_import_fixture() {
 	let existing = sqlx::query(
 		r#"SELECT rank, player_name, dan, clear_type, letter_rank, score, score_max,
 		          combo, combo_max, bad_poor, pgreat, great, good, bad, poor,
-		          option_1, option_2, input, client, note, is_cheated
+		          option_1, option_2, option_3, option_4, input, client, note, is_cheated
 		   FROM pb WHERE md5 = ? AND player_id = ?"#,
 	)
 	.bind(MD5)
