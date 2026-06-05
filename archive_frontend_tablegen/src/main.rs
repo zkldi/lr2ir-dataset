@@ -103,7 +103,7 @@ static TABLES: &[TableDef] = &[
 	TableDef {
 		name: "Gachimijoy",
 		symbol: "双",
-		url: "http://su565fx.web.fc2.com/Gachimijoy/gachimijoy.html",
+		url: "https://yeslyko.github.io/gachimijoy-mirror/",
 	},
 	TableDef {
 		name: "delayjoy",
