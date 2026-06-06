@@ -16,7 +16,7 @@ Take a look in the `archive_frontend` folder for more information on that.
 
 This is an 8GiB sqlite database containing every score, chart, course and player on LR2IR. This is likely the data you want.
 
-This dataset contains `25,336,942` score entries, `97,895` players, `333,362` charts, `353,699` course plays and `3,496,970` ghost replays.
+This dataset contains `25,562,325` score entries, `97,895` players, `333,362` charts, `353,699` course plays and `3,496,970` ghost replays.
 
 <img width="1219" height="1043" alt="image" src="https://github.com/user-attachments/assets/e24f0a6d-a249-4052-beee-ba659cc6e14d" />
 <img width="1226" height="1053" alt="image" src="https://github.com/user-attachments/assets/725a2d9f-0eb3-4281-9a4c-605c01ce747d" />
