@@ -101,11 +101,11 @@
 	<span class="cb-fail-l">FAILED ({{ meta.failed_count }})</span>
 </div>
 <div class="clear-bar" style="width: 100%;">
-	<div class="cb-fc"   style="width: {{ meta.fc_count     * 100 / meta.play_people }}%;"></div>
-	<div class="cb-hard" style="width: {{ meta.hard_count   * 100 / meta.play_people }}%;"></div>
-	<div class="cb-norm" style="width: {{ meta.normal_count * 100 / meta.play_people }}%;"></div>
-	<div class="cb-easy" style="width: {{ meta.easy_count   * 100 / meta.play_people }}%;"></div>
-	<div class="cb-fail" style="width: {{ meta.failed_count * 100 / meta.play_people }}%;"></div>
+	<div class="cb-fc"   style="flex: {{ meta.fc_count     * 100 / meta.play_people }}%;"></div>
+	<div class="cb-hard" style="flex: {{ meta.hard_count   * 100 / meta.play_people }}%;"></div>
+	<div class="cb-norm" style="flex: {{ meta.normal_count * 100 / meta.play_people }}%;"></div>
+	<div class="cb-easy" style="flex: {{ meta.easy_count   * 100 / meta.play_people }}%;"></div>
+	<div class="cb-fail" style="flex: {{ meta.failed_count * 100 / meta.play_people }}%;"></div>
 </div>
 {% endif %}
 
