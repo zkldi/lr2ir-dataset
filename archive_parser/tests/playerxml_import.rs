@@ -186,9 +186,10 @@ async fn playerxml_import_fixture() {
 	db::run_migrations(&pool).await.expect("run migrations");
 	seed_existing_pb_row(&pool).await;
 
-	let (rows_read, rows_inserted, md5s_ranked) = db::import_playerxml_scores(&pool, &playerxml_path)
-		.await
-		.expect("import playerxml scores");
+	let (rows_read, rows_inserted, md5s_ranked) =
+		db::import_playerxml_scores(&pool, &playerxml_path)
+			.await
+			.expect("import playerxml scores");
 	assert_eq!(rows_read, 2);
 	assert_eq!(rows_inserted, 1);
 	assert_eq!(md5s_ranked, 1);
@@ -318,13 +319,12 @@ async fn playerxml_rank_ties() {
 	assert_eq!(rows_inserted, 3);
 	assert_eq!(md5s_ranked, 1);
 
-	let ranks: Vec<i64> = sqlx::query_scalar(
-		"SELECT rank FROM pb WHERE md5 = ? ORDER BY player_id",
-	)
-	.bind(md5)
-	.fetch_all(&pool)
-	.await
-	.expect("fetch ranks");
+	let ranks: Vec<i64> =
+		sqlx::query_scalar("SELECT rank FROM pb WHERE md5 = ? ORDER BY player_id")
+			.bind(md5)
+			.fetch_all(&pool)
+			.await
+			.expect("fetch ranks");
 	assert_eq!(ranks, vec![1, 2, 2]);
 }
 
