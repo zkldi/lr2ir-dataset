@@ -149,7 +149,7 @@ async fn fetch_chart_detail(
 		r#"SELECT p.rank, p.player_id, p.player_name, p.dan, p.clear_type, p.letter_rank,
 				  p.score, p.score_max, p.combo, p.combo_max, p.bad_poor,
 				  p.pgreat, p.great, p.good, p.bad, p.poor,
-				  p.option_1, p.option_2, p.input, p.client, p.note, p.is_cheated,
+				  p.option_1, p.option_2, p.option_3, p.option_4, p.input, p.client, p.note, p.is_cheated,
 				  EXISTS(SELECT 1 FROM ghost g WHERE g.md5 = p.md5 AND g.player_id = p.player_id) AS has_ghost
 		   FROM pb p WHERE p.md5 = ?1 AND (?2 IS NULL OR p.input = ?2)
 		   ORDER BY p.rank ASC
@@ -224,6 +224,7 @@ pub async fn chart_detail(
 		bpm_min: chart_row.bpm_min,
 		bpm_max: chart_row.bpm_max,
 		level: chart_row.level,
+		is_dp: chart_row.keys.contains("14") || chart_row.keys.contains("10"),
 		keys: chart_row.keys,
 		judge_rank: chart_row.judge_rank,
 		play_count: chart_row.play_count,
@@ -263,6 +264,8 @@ pub async fn chart_detail(
 			poor: r.poor,
 			option_1: r.option_1,
 			option_2: r.option_2,
+			option_3: r.option_3,
+			option_4: r.option_4,
 			input: r.input,
 			client: r.client,
 			note: r.note,

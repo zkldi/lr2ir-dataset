@@ -149,7 +149,10 @@ pub async fn course_detail(
 		category: course.category.unwrap_or_default(),
 		creator_id: course.creator_id,
 		creator_name: display_player_name(course.creator_name.as_deref().unwrap_or_default()),
-		is_dp: course.keys.as_deref().unwrap_or("").contains("14"),
+		is_dp: {
+			let k = course.keys.as_deref().unwrap_or("");
+			k.contains("14") || k.contains("10")
+		},
 		keys: course.keys.unwrap_or_default(),
 		play_count: course.play_count.unwrap_or(0),
 		play_people,

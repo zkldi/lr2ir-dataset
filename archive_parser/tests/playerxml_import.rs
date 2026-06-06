@@ -186,9 +186,10 @@ async fn playerxml_import_fixture() {
 	db::run_migrations(&pool).await.expect("run migrations");
 	seed_existing_pb_row(&pool).await;
 
-	let (rows_read, rows_inserted, md5s_ranked) = db::import_playerxml_scores(&pool, &playerxml_path)
-		.await
-		.expect("import playerxml scores");
+	let (rows_read, rows_inserted, md5s_ranked) =
+		db::import_playerxml_scores(&pool, &playerxml_path)
+			.await
+			.expect("import playerxml scores");
 	assert_eq!(rows_read, 2);
 	assert_eq!(rows_inserted, 1);
 	assert_eq!(md5s_ranked, 1);
@@ -196,7 +197,7 @@ async fn playerxml_import_fixture() {
 	let existing = sqlx::query(
 		r#"SELECT rank, player_name, dan, clear_type, letter_rank, score, score_max,
 		          combo, combo_max, bad_poor, pgreat, great, good, bad, poor,
-		          option_1, option_2, input, client, note, is_cheated
+		          option_1, option_2, option_3, option_4, input, client, note, is_cheated
 		   FROM pb WHERE md5 = ? AND player_id = ?"#,
 	)
 	.bind(MD5)
@@ -318,13 +319,12 @@ async fn playerxml_rank_ties() {
 	assert_eq!(rows_inserted, 3);
 	assert_eq!(md5s_ranked, 1);
 
-	let ranks: Vec<i64> = sqlx::query_scalar(
-		"SELECT rank FROM pb WHERE md5 = ? ORDER BY player_id",
-	)
-	.bind(md5)
-	.fetch_all(&pool)
-	.await
-	.expect("fetch ranks");
+	let ranks: Vec<i64> =
+		sqlx::query_scalar("SELECT rank FROM pb WHERE md5 = ? ORDER BY player_id")
+			.bind(md5)
+			.fetch_all(&pool)
+			.await
+			.expect("fetch ranks");
 	assert_eq!(ranks, vec![1, 2, 2]);
 }
 
