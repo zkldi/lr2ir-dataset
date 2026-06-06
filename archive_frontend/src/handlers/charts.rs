@@ -224,6 +224,7 @@ pub async fn chart_detail(
 		bpm_min: chart_row.bpm_min,
 		bpm_max: chart_row.bpm_max,
 		level: chart_row.level,
+		is_dp: chart_row.keys.contains("14") || chart_row.keys.contains("10"),
 		keys: chart_row.keys,
 		judge_rank: chart_row.judge_rank,
 		play_count: chart_row.play_count,

@@ -230,6 +230,7 @@ pub struct ChartMeta {
 	pub bpm_min: String,
 	pub bpm_max: String,
 	pub level: String,
+	pub is_dp: bool,
 	pub keys: String,
 	pub judge_rank: String,
 	pub play_count: i64,

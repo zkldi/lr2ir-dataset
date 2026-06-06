@@ -197,6 +197,7 @@
 			<th>PR</th>
 			<th>OP</th>
 			<th>OP</th>
+			{% if meta.is_dp %}<th>OP</th><th>OP</th>{% endif %}
 			<th>Input</th>
 			<th>Client</th>
 			<th>Ghost</th>
@@ -228,6 +229,7 @@
 			<td>{{ r.poor }}</td>
 			<td>{{ r.option_1 }}</td>
 			<td>{{ r.option_2 }}</td>
+			{% if meta.is_dp %}<td>{{ r.option_3 }}</td><td>{{ r.option_4 }}</td>{% endif %}
 			<td>{{ r.input }}</td>
 			<td>{{ r.client }}</td>
 			<td style="text-align: center; white-space: nowrap;">
@@ -241,12 +243,12 @@
 		{% if !r.note.is_empty() %}
 		<tr class="gray">
 			<td></td>
-			<td colspan="17" style="white-space: pre-wrap;">{{ r.note }}</td>
+			<td colspan="{% if meta.is_dp %}19{% else %}17{% endif %}" style="white-space: pre-wrap;">{{ r.note }}</td>
 		</tr>
 		{% endif %}
 		{% endfor %}
 		{% if rows.is_empty() %}
-		<tr><td colspan="18" style="color: #888; text-align: center; padding: 12px;">No scores on this page.</td></tr>
+		<tr><td colspan="{% if meta.is_dp %}18{% else %}16{% endif %}" style="color: #888; text-align: center; padding: 12px;">No scores on this page.</td></tr>
 		{% endif %}
 	</tbody>
 </table>
